@@ -1,0 +1,99 @@
+{
+  "name": "Oneseco Meme Lab - Intake (approval gated)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "oneseco-meme-lab/intake",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "intake-webhook",
+      "name": "Intake Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "oneseco-meme-lab-intake"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.MEME_LAB_WORKER_URL + '/v1/meme-jobs' }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $env.MEME_LAB_API_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ id: $json.body.id, topic: $json.body.topic, timezone: $json.body.timezone || 'America/Chicago' }) }}",
+        "options": {}
+      },
+      "id": "create-job",
+      "name": "Create Job in Cloudflare",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        490,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ id: $json.id, stage: $json.stage, status: 'editorial_queue', approvedForPublish: false }) }}",
+        "options": {
+          "responseCode": 201
+        }
+      },
+      "id": "intake-response",
+      "name": "Respond to Intake",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        740,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Intake Webhook": {
+      "main": [
+        [
+          {
+            "node": "Create Job in Cloudflare",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Job in Cloudflare": {
+      "main": [
+        [
+          {
+            "node": "Respond to Intake",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}
