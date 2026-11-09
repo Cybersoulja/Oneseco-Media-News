@@ -1,0 +1,23 @@
+name: Meme Lab validation (no deployment)
+on:
+  pull_request:
+    paths:
+      - 'meme-lab/**'
+      - '.github/workflows/meme-lab-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Node tests
+        run: node --test meme-lab/workflow.test.mjs meme-lab/cloudflare/*.test.mjs
+      - name: Verify no deployment in CI
+        run: |
+          test "${{ github.event_name }}" != "push"
+          grep -q '"0 12 \* \* \*"' meme-lab/cloudflare/wrangler.jsonc
