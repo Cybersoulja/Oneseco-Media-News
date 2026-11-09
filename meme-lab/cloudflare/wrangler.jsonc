@@ -2,11 +2,14 @@
   "name": "oneseco-meme-lab",
   "main": "worker.mjs",
   "compatibility_date": "2026-11-01",
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "oneseco-meme-lab",
-      "database_id": "REPLACE_WITH_YOUR_D1_DATABASE_ID"
-    }
-  ]
+  "triggers": { "crons": ["0 12 * * *"] },
+  "queues": {
+    "producers": [{ "binding": "INTAKE_QUEUE", "queue": "oneseco-meme-intake" }],
+    "consumers": [{ "queue": "oneseco-meme-intake", "max_batch_size": 10, "max_retries": 3 }]
+  },
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "oneseco-meme-lab",
+    "database_id": "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+  }]
 }
