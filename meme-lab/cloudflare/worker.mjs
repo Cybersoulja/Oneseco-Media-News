@@ -1,4 +1,5 @@
 import { createJob, advance } from '../workflow.mjs';
+import { scheduledIntake, consumeIntake } from './scheduler.mjs';
 
 const json = (data, status = 200) => new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
 const validId = id => typeof id === 'string' && /^[a-zA-Z0-9_-]{1,80}$/.test(id);
@@ -14,6 +15,8 @@ async function save(db,job,previousVersion) {
   if(result.meta?.changes !== 1) throw new Error('Concurrent update; retry');
 }
 export default {
+  async scheduled(controller, env) { return scheduledIntake(controller, env); },
+  async queue(batch, env) { return consumeIntake(batch, env); },
   async fetch(request,env) {
     if (!env.DB || !env.NEWSROOM_API_TOKEN) return json({error:'Missing DB or API token configuration'},503);
     const token=request.headers.get('authorization')?.replace(/^Bearer /i,'');
