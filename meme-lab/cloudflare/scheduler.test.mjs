@@ -10,7 +10,7 @@ test('scheduled scan queues intake without approval',async()=>{
 });
 test('queue consumer stores unapproved job',async()=>{
  let saved;
- const message={body:{kind:'trend-scan',id:'scan-202611091200',requestedAt:'2026-11-09T12:00:00Z'},ack(){this.acked=true},retry(){throw Error('Unexpected retry')}};
+ const message={body:{kind:'trend-scan',id:'scan-202611090000',requestedAt:'2026-11-09T12:00:00Z'},ack(){this.acked=true},retry(){throw Error('Unexpected retry')}};
  const env={DB:{prepare(){return {bind(...args){saved=JSON.parse(args[2]);return this},async run(){return {}}}}}};
  await consumeIntake({messages:[message]},env);
  assert.equal(message.acked,true);
