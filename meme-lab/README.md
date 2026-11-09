@@ -13,7 +13,7 @@ A human-approved cultural satire production desk for Oneseco Media News / Trend 
 8. `publish`: export to a queue only after separate publishing approval.
 
 ## Integration
-Use `workflow.mjs` as the framework-independent state machine. Connect n8n webhooks to the adapter interface in `adapters.example.mjs`. No API keys in source control. Store credentials in n8n credentials or a secret manager. Store output in Cloudflare R2 when configured. The original Google workflow is a reference, not an executable dependency.
+Use `workflow.mjs` as the framework-independent state machine. Cloudflare Cron Triggers and Queues create daily intake jobs directly in D1; no n8n is required. Connect real providers to the adapter interface in `adapters.example.mjs`. No API keys in source control. Store credentials in Cloudflare Worker secrets. Store output in Cloudflare R2 when configured. The original Google workflow is a reference, not an executable dependency.
 
 ## Safety and editorial rules
 - Record the trend timestamp with an IANA time zone and link to original sources. Never invent social trends or engagement figures.
@@ -23,4 +23,4 @@ Use `workflow.mjs` as the framework-independent state machine. Connect n8n webho
 - Keep rights, privacy, platform terms, and approval checks in the workflow.
 
 ## Status
-Starter implementation only: validation, state transitions, and adapter contract. Real trend search, image/video/audio generation, storage, n8n integration and publishing remain unconnected.
+Cloudflare-only starter committed: job API, D1 persistence, scheduled Queue intake and tests. Not deployed. Real trend search, image/video/audio generation, R2 artifact storage, editorial identity verification and publishing remain unconnected.
